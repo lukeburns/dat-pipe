@@ -1,0 +1,19 @@
+dat-pipe [<db-path>] <key>
+
+  pipe feed <key> to stdout (and save feed to <db-path>)
+
+  --exit                exit process after download finishes (default: true)
+
+dat-pipe [<db-path>]
+
+  pipe stdin to a new feed (and save feed to <db-path>)
+
+  --static, -s          create a static feed
+  --log, -l             append public key to log
+  --secret              log private key
+  --exit                exit process after download finishes
+
+general options
+
+  --help, -h            get usage information
+  --version, -v         get installed dat version

@@ -1,0 +1,21 @@
+{
+  "name": "dat-pipe",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "dat-pipe": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Luke Burns <lukemburns@gmail.com> (http://lukeburns.com/)",
+  "license": "ISC",
+  "dependencies": {
+    "dat-encoding": "^2.0.1",
+    "hypercore": "^4.2.7",
+    "hyperdrive-archive-swarm": "^3.0.1",
+    "level-party": "^3.0.4",
+    "minimist": "^1.2.0"
+  }
+}
