@@ -1,7 +1,7 @@
 {
   "name": "dat-pipe",
-  "version": "0.3.0",
-  "description": "stream binary feeds over stdin/stdout",
+  "version": "0.3.1",
+  "description": "stream hypercore feeds over stdin/stdout",
   "main": "index.js",
   "bin": {
     "dat-pipe": "index.js"
@@ -17,6 +17,7 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
+    "sodium-signatures": "^1.2.2",
     "tape": "^4.6.0"
   }
 }

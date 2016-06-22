@@ -1,3 +1,14 @@
+# dat-pipe
+
+stream [hypercore](https://github.com/mafintosh/hypercore) feeds over stdin/stdout
+
+```
+npm install -g dat-pipe
+```
+
+## Usage
+
+```
 dat-pipe [<db-path>] <public-key>
 
   pipe feed <public-key> to stdout (and save feed to <db-path>) 
@@ -20,3 +31,8 @@ general options
 
   --help, -h            get usage information
   --version, -v         get installed dat version
+```
+
+## License
+
+MIT
