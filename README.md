@@ -14,8 +14,8 @@ dat-pipe [<db-path>] <public-key>
   pipe feed <public-key> to stdout (and save feed to <db-path>) 
 
   --tail, -t            tail feed
-  --exit                exit process after download finishes (default: true)
-
+  --exit                exit process after download finishes
+  
 dat-pipe [<db-path>] [<private-key>]
 
   pipe stdin to feed <private-key> or to a new feed (and save feed to <db-path>) 
