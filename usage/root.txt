@@ -2,15 +2,18 @@ dat-pipe [<db-path>] <key>
 
   pipe feed <key> to stdout (and save feed to <db-path>)
 
+  --tail, -t            tail feed
   --exit                exit process after download finishes (default: true)
 
 dat-pipe [<db-path>]
 
   pipe stdin to a new feed (and save feed to <db-path>)
 
+  --read, -r            pipe feed to stdout
   --static, -s          create a static feed
-  --log, -l             append public key to log
-  --secret              log private key
+  --no-log, -n          don't log public key (logs key to stdout by default)
+  --log, -l             append public key to file log instead of stdout
+  --secret              log private key as well
   --exit                exit process after download finishes
 
 general options

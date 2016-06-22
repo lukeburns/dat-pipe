@@ -1,17 +1,27 @@
 #!/usr/bin/env node
 
-var fs = require('fs')
 var minimist = require('minimist')
-var memdb = require('memdb')
+var swarmStream = require('hypercore-swarm-stream')
 var level = require('level-party')
-var encoding = require('dat-encoding')
-var hypercore = require('hypercore')
-var createSwarm = require('hyperdrive-archive-swarm')
 
-var opts = require('minimist')(process.argv.splice(2), { alias: { s: 'static', t: 'tail', l: 'log', e: 'exit', v: 'version', h: 'help' }, boolean: ['static', 'tail', 'exit', 'secret'] })
+var opts = require('minimist')(process.argv.splice(2), { alias: { 
+  r: 'read',
+  s: 'static', 
+  t: 'tail', 
+  e: 'exit', 
+  l: 'log', 
+  n: 'no-log',
+  v: 'version', 
+  h: 'help' 
+}})
 var len = opts._.length
 
 process.title = 'dat-pipe'
+
+if (opts.help) {
+  console.log(require('./usage')('root.txt'))
+  process.exit(0)
+}
 
 if (opts.version) {
   var pkg = require('./package.json')
@@ -19,72 +29,55 @@ if (opts.version) {
   process.exit(0)
 }
 
-if (opts.help) {
-  console.log(require('./usage')('root.txt'))
-  process.exit(0)
-}
-
+var path, key
 if (len == 1) {
-  try {
-    var key = encoding.decode(opts._[0])
-  } catch (e) {
-    var path = opts._[0]
+  if (opts._[0].length === 64 || opts._[0].length === 128) {
+    key = opts._[0]
+  } else {
+    path = opts._[0]
   }
 } else {
-  var path = opts._[0]
-  var key = opts._[1]
+  path = opts._[0]
+  key = opts._[1]
 }
+
+opts.db = (typeof path === 'string') ? level(path) : undefined
 
 delete opts._
 
-var db = (path) ? level(path) : memdb()
-var core = hypercore(db)
-var feed = core.createFeed(key, { live: !opts.static })
+var stream = swarmStream(key, opts)
 
-var read = !!key
-var write = !key
-var swarm
-
-if (read) {
-  var rs = feed.createReadStream({ live: !!opts.tail })
-  rs.pipe(process.stdout)
-
-  swarm = createSwarm(feed)
-  rs.on('end', function () {
-    if (opts.exit === undefined || opts.exit) swarm.node.close()
-  })
+if (!!stream.write) {
+  process.stdin.pipe(stream)
+  opts.tail = true
 }
 
-if (write) {
-  var ws = feed.createWriteStream(opts)
-  process.stdin.pipe(ws)
+if (!stream.secretKey || opts.read) {
+  stream.pipe(process.stdout)
+}
 
-  if (opts.static) {
-    ws.on('finish', function () {
-      swarm = swarm || createSwarm(feed)
-      if (opts.exit) swarm.node.close()
-      log(feed)
-    })
+if (!opts['no-log']) {
+  if (stream.live) {
+    log(stream.key, stream.secretKey)
   } else {
-    swarm = swarm || createSwarm(feed)
-    log(feed)
-    ws.on('finish', function () {
-      if (opts.exit) swarm.node.close()
+    stream.on('finish', function () {
+      log(stream.key, stream.secretKey)
     })
   }
 }
 
-function log (feed) {
-  var key = feed.key.toString('hex')
-  var secret = feed.secretKey.toString('hex')
+function log (key, secretKey) {
+  var key = key.toString('hex')
+  var secret = (secretKey) ? secretKey.toString('hex') : undefined
   if (opts.log === undefined) {
     console.log('public key', key)
     if (opts.secret && secret) console.log('secret key', secret)
-  } else {
+  } else if (opts.log !== false) {
     opts.log = (typeof opts.log === 'boolean') ? 'dat-pipe.log' : opts.log
-    var file = fs.createWriteStream(opts.log, { flags: 'a' })
+    var file = require('fs').createWriteStream(opts.log, { flags: 'a' })
     file.write(key)
     if (opts.secret && secret) file.write(' '+secret)
+    file.write('\n')
     file.end()
   }
 }
