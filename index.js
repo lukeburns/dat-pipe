@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-var minimist = require('minimist')
-var swarmStream = require('hypercore-swarm-stream')
+var createStream = require('hypercore-stream-swarm')
 var level = require('level-party')
+var through = require('through2')
 
-var opts = require('minimist')(process.argv.splice(2), { alias: { 
+var opts = require('minimist')(process.argv.splice(2), { alias: {
   r: 'read',
-  s: 'static', 
-  t: 'tail', 
-  e: 'exit', 
-  l: 'log', 
+  s: 'static',
+  t: 'tail',
+  e: 'exit',
+  l: 'log',
   n: 'no-log',
-  v: 'version', 
-  h: 'help' 
+  v: 'version',
+  h: 'help'
 }})
 var len = opts._.length
 
@@ -30,7 +30,7 @@ if (opts.version) {
 }
 
 var path, key
-if (len == 1) {
+if (len === 1) {
   if (opts._[0].length === 64 || opts._[0].length === 128) {
     key = opts._[0]
   } else {
@@ -45,15 +45,18 @@ opts.db = (typeof path === 'string') ? level(path) : undefined
 
 delete opts._
 
-var stream = swarmStream(key, opts)
+var stream = createStream(key, opts)
 
-if (!!stream.write) {
+if (stream.write) {
   process.stdin.pipe(stream)
   opts.tail = true
 }
 
 if (!stream.secretKey || opts.read) {
-  stream.pipe(process.stdout)
+  stream.pipe(through(function (chunk, enc, cb) {
+    if (opts.split) this.push(chunk + '\r\n')
+    cb()
+  })).pipe(process.stdout)
 }
 
 if (!opts['no-log']) {
@@ -67,7 +70,7 @@ if (!opts['no-log']) {
 }
 
 function log (key, secretKey) {
-  var key = key.toString('hex')
+  key = key.toString('hex')
   var secret = (secretKey) ? secretKey.toString('hex') : undefined
   if (opts.log === undefined) {
     console.log('public key', key)
@@ -76,7 +79,7 @@ function log (key, secretKey) {
     opts.log = (typeof opts.log === 'boolean') ? 'dat-pipe.log' : opts.log
     var file = require('fs').createWriteStream(opts.log, { flags: 'a' })
     file.write(key)
-    if (opts.secret && secret) file.write(' '+secret)
+    if (opts.secret && secret) file.write(' ' + secret)
     file.write('\n')
     file.end()
   }

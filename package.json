@@ -1,23 +1,24 @@
 {
   "name": "dat-pipe",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "stream hypercore feeds over stdin/stdout",
   "main": "index.js",
   "bin": {
     "dat-pipe": "index.js"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "standard && node test.js"
   },
   "author": "Luke Burns <lukemburns@gmail.com> (http://lukeburns.com/)",
   "license": "MIT",
   "dependencies": {
-    "hypercore-swarm-stream": "^0.4.1",
+    "hypercore-stream-swarm": "^0.4.3",
     "level-party": "^3.0.4",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
     "sodium-signatures": "^1.2.2",
-    "tape": "^4.6.0"
+    "tape": "^4.6.0",
+    "standard": "^6.0.8"
   }
 }
