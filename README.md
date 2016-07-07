@@ -33,6 +33,18 @@ general options
   --version, -v         get installed dat-pipe version
 ```
 
+## Examples
+
+**Write and replicate a static feed**
+```bash
+echo 'hello world' | dat-pipe --static --log
+```
+
+**Tail #dat over [hyperirc](https://mafintosh.github.io/hyperirc-www/#4e397d94d0f5df0e2268b2b7b23948b6dddfca66f91c2d452f404202e6d0f626) and save to disk**
+```bash
+dat-pipe irc.db 4e397d94d0f5df0e2268b2b7b23948b6dddfca66f91c2d452f404202e6d0f626 --start 6000 --format --tail
+```
+
 ## License
 
 MIT
