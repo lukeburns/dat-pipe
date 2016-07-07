@@ -1,6 +1,6 @@
 {
   "name": "dat-pipe",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "stream hypercore feeds over stdin/stdout",
   "main": "index.js",
   "bin": {

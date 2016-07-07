@@ -6,11 +6,11 @@ var through = require('through2')
 
 var opts = require('minimist')(process.argv.splice(2), { alias: {
   r: 'read',
-  s: 'static',
   t: 'tail',
   e: 'exit',
+  f: 'format',
+  s: 'static',
   l: 'log',
-  n: 'no-log',
   v: 'version',
   h: 'help'
 }})
@@ -52,34 +52,34 @@ if (stream.write) {
   opts.tail = true
 }
 
-if (!stream.secretKey || opts.read) {
+if ((stream.live && !stream.secretKey) || opts.read) {
   stream.pipe(through(function (chunk, enc, cb) {
-    if (opts.split) this.push(chunk + '\r\n')
+    if (opts.format) chunk += '\r\n'
+    this.push(chunk)
     cb()
   })).pipe(process.stdout)
 }
 
-if (!opts['no-log']) {
+if (opts.log) {
   if (stream.live) {
     log(stream.key, stream.secretKey)
   } else {
-    stream.on('finish', function () {
+    stream.feed.on('close', function () {
       log(stream.key, stream.secretKey)
     })
   }
 }
 
 function log (key, secretKey) {
-  key = key.toString('hex')
-  var secret = (secretKey) ? secretKey.toString('hex') : undefined
-  if (opts.log === undefined) {
+  key = (key) ? key.toString('hex') : undefined
+  secretKey = (secretKey) ? secretKey.toString('hex') : undefined
+  if (opts.log === true) {
     console.log('public key', key)
-    if (opts.secret && secret) console.log('secret key', secret)
-  } else if (opts.log !== false) {
-    opts.log = (typeof opts.log === 'boolean') ? 'dat-pipe.log' : opts.log
+    if (opts.secret && secretKey) console.log('secret key', secretKey)
+  } else {
     var file = require('fs').createWriteStream(opts.log, { flags: 'a' })
     file.write(key)
-    if (opts.secret && secret) file.write(' ' + secret)
+    if (opts.secret && secretKey) file.write(' ' + secretKey)
     file.write('\n')
     file.end()
   }
