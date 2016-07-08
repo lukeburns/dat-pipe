@@ -29,7 +29,7 @@ general options
   --format, -f          separate stdout into lines
   --log, -l             append public key to stdout or to a specified file
   --secret              include secret key in log if --log flag is set and secret key is available
-  --help, -h            get usage this information
+  --help, -h            get this usage information
   --version, -v         get installed dat-pipe version
 ```
 
