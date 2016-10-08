@@ -14,7 +14,8 @@
   "dependencies": {
     "hypercore-stream-swarm": "^0.4.4",
     "level-party": "^3.0.4",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "through2": "^2.0.1"
   },
   "devDependencies": {
     "sodium-signatures": "^1.2.2",
